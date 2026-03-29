@@ -6,21 +6,23 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.Comment;
-import ru.skypro.homework.dto.Comments;
-import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.dto.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 
+@Slf4j
+@CrossOrigin(value = "http://localhost:8080")
 @RestController
-@RequestMapping("/ads/{id}/comments")
+@RequiredArgsConstructor
 @Tag(name = "Комментарии", description = "API для управления комментариями")
 public class CommentController {
 
-    @GetMapping
+    @GetMapping("/ads/{id}/comments")
     @Operation(
             summary = "Получение комментариев объявления",
             description = "Возвращает список комментариев для указанного объявления"
@@ -41,7 +43,7 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
-    @PostMapping
+    @PostMapping("/ads/{id}/comments")
     @Operation(
             summary = "Добавление комментария к объявлению",
             description = "Создает новый комментарий для указанного объявления"
@@ -69,7 +71,7 @@ public class CommentController {
         return ResponseEntity.ok(comment);
     }
 
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/ads/{adId}/comments/{commentId}")
     @Operation(
             summary = "Удаление комментария",
             description = "Удаляет комментарий по ID"
@@ -81,12 +83,12 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     public ResponseEntity<Void> deleteComment(
-            @PathVariable Integer adId,
-            @PathVariable Integer commentId) {
+            @PathVariable("adId") Integer adId,
+            @PathVariable("commentId") Integer commentId) {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{commentId}")
+    @PatchMapping("/ads/{adId}/comments/{commentId}")
     @Operation(
             summary = "Обновление комментария",
             description = "Обновляет текст комментария по ID"
@@ -102,8 +104,8 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     public ResponseEntity<Comment> updateComment(
-            @PathVariable Integer adId,
-            @PathVariable Integer commentId,
+            @PathVariable("adId") Integer adId,
+            @PathVariable("commentId") Integer commentId,
             @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment) {
 
         Comment comment = new Comment();

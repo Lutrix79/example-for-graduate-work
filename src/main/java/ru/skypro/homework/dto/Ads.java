@@ -2,6 +2,8 @@ package ru.skypro.homework.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.List;
+
 @Schema(description = "Список объявлений")
 public class Ads {
 
@@ -10,26 +12,25 @@ public class Ads {
     private int count;
 
     @Schema(description = "список объявлений")
-    private Ad result;
+    private List<Ad> results;
 
-    public Ads(int count, Ad result) {
+    public Ads() {
         this.count = count;
-        this.result = result;
     }
 
     public int getCount() {
         return count;
     }
 
-    public Ad getResult() {
-        return result;
+    public List getResults() {
+        return results;
     }
 
     public void setCount(int count) {
         this.count = count;
     }
 
-    public void setResult(Ad result) {
-        this.result = result;
+    public void setResults(List results) {
+        this.results = results;
     }
 }

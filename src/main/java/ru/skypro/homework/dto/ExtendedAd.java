@@ -41,6 +41,8 @@ public class ExtendedAd {
             example = "Продам iPhone 13")
     private String title;
 
+    public ExtendedAd() {
+    }
     public ExtendedAd(int pk, String authorFirstName, String authorLastName, String description, String email, String image, String phone, int price, String title) {
         this.pk = pk;
         this.authorFirstName = authorFirstName;

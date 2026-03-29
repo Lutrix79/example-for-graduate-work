@@ -20,7 +20,7 @@ public class UpdateUser {
             maxLength = 10,
             example = "Doe")
     @Size(min = 3, max = 10)
-    private String lastname;
+    private String lastName;
 
     @Schema(description = "телефон пользователя",
             pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}",
@@ -30,9 +30,9 @@ public class UpdateUser {
 
     public UpdateUser() {}
 
-    public UpdateUser(String firstName, String lastname, String phone) {
+    public UpdateUser(String firstName, String lastName, String phone) {
         this.firstName = firstName;
-        this.lastname = lastname;
+        this.lastName = lastName;
         this.phone = phone;
     }
 
@@ -41,7 +41,7 @@ public class UpdateUser {
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
     public String getPhone() {
@@ -53,7 +53,7 @@ public class UpdateUser {
     }
 
     public void setLastname(String lastname) {
-        this.lastname = lastname;
+        this.lastName = lastname;
     }
 
     public void setPhone(String phone) {

@@ -54,8 +54,8 @@ public class UserController {
         User user = new User();
         user.setId(1);
         user.setEmail("user@example.com");
-        user.setFirstname("John");
-        user.setLastname("Doe");
+        user.setFirstName("John");
+        user.setLastName("Doe");
         user.setPhone("+7 (123) 456-78-90");
         user.setRole(Role.USER);
         user.setImage("/images/default-avatar.jpg");

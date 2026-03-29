@@ -7,7 +7,7 @@ public class Ad {
 
     @Schema(description = "id автора объявления",
             example = "1")
-    private String author;
+    private int author;
 
     @Schema(description = "ссылка на картинку объявления",
             example = "/images/ad_1.jpg")
@@ -25,7 +25,9 @@ public class Ad {
             example = "Продам iPhone 13")
     private String title;
 
-    public Ad(String author, String image, int pk, int price, String title) {
+    public Ad() {
+    }
+    public Ad(int author, String image, int pk, int price, String title) {
         this.author = author;
         this.image = image;
         this.pk = pk;
@@ -33,7 +35,7 @@ public class Ad {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public int getAuthor() {
         return author;
     }
 
@@ -53,7 +55,7 @@ public class Ad {
         return title;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Integer author) {
         this.author = author;
     }
 

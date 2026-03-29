@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor  // ← Добавляет пустой конструктор
+@NoArgsConstructor
 @Schema(description = "Информация о пользователе")
 public class User {
 
@@ -19,11 +19,11 @@ public class User {
 
     @Schema(description = "имя пользователя",
             example = "John")
-    private String firstname;
+    private String firstName;
 
     @Schema(description = "фамилия пользователя",
             example = "Doe")
-    private String lastname;
+    private String lastName;
 
     @Schema(description = "телефон пользователя",
             example = "+7 (123) 456-78-90")
@@ -38,10 +38,10 @@ public class User {
             example = "/images/avatar.jpg")
     private String image;
 
-    public User(String phone, String lastname, String firstname, String email, int id, String image, Role role) {
+    public User(String phone, String lastName, String firstName, String email, int id, String image, Role role) {
         this.phone = phone;
-        this.lastname = lastname;
-        this.firstname = firstname;
+        this.lastName = lastName;
+        this.firstName = firstName;
         this.email = email;
         this.id = id;
         this.role = role;
@@ -57,11 +57,11 @@ public class User {
     }
 
     public String getFirstname() {
-        return firstname;
+        return firstName;
     }
 
     public String getLastname() {
-        return lastname;
+        return lastName;
     }
 
     public String getPhone() {
@@ -84,12 +84,12 @@ public class User {
         this.email = email;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstname) {
+        this.firstName = firstname;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastname) {
+        this.lastName = lastname;
     }
 
     public void setPhone(String phone) {
