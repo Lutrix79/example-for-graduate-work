@@ -34,7 +34,7 @@ public class UserEntity {
     private RoleEnum role;
 
     private String image;
-
+    private  String password;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<AdvertisementEntity> ads;
 

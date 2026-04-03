@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.service.CommentService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 @Validated
 @Tag(name = "Комментарии", description = "Управление комментариями объявлений")
 public class CommentController {
-
+    private final CommentService commentService;
     /**
      * GET /ads/{adId}/comments — Получение комментариев объявления
      */
@@ -34,8 +35,9 @@ public class CommentController {
     public ResponseEntity<List<Comment>> getComments(
             @Parameter(description = "ID объявления", required = true)
             @PathVariable Long adId) {
-        // TODO: Реализация получения комментариев по adId
-        return ResponseEntity.ok(List.of());
+
+        List<Comment> comments = commentService.getCommentsByAdId(adId);
+        return ResponseEntity.ok(comments);
     }
 
     /**
@@ -47,12 +49,11 @@ public class CommentController {
     @ApiResponse(responseCode = "401", description = "Не авторизован")
     @PostMapping
     public ResponseEntity<Comment> addComment(
-            @Parameter(description = "ID объявления", required = true)
             @PathVariable Long adId,
-            @Parameter(description = "Данные комментария", required = true)
-            @Valid @RequestBody CreateOrUpdateComment commentRequest) {
+            @Valid @RequestBody CreateOrUpdateComment commentRequest,
+            @RequestHeader("X-User-Id") Long authorId) {
         // TODO: Реализация добавления комментария
-        Comment newComment = new Comment();
+        Comment newComment = commentService.addComment(adId, commentRequest, authorId);
         return ResponseEntity.status(201).body(newComment);
     }
 
@@ -66,14 +67,12 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     @PatchMapping("/{commentId}")
     public ResponseEntity<Comment> updateComment(
-            @Parameter(description = "ID объявления", required = true)
             @PathVariable Long adId,
-            @Parameter(description = "ID комментария", required = true)
-            @PathVariable Integer commentId,
-            @Parameter(description = "Данные для обновления", required = true)
-            @Valid @RequestBody CreateOrUpdateComment commentRequest) {
+            @PathVariable Long commentId,
+            @Valid @RequestBody CreateOrUpdateComment commentRequest,
+            @RequestHeader("X-User-Id") Integer authorId) {
         // TODO: Реализация обновления комментария
-        Comment updatedComment = new Comment();
+        Comment updatedComment = commentService.updateComment(adId, commentId, commentRequest, authorId);
         return ResponseEntity.ok(updatedComment);
     }
 
@@ -84,13 +83,13 @@ public class CommentController {
     @ApiResponse(responseCode = "204", description = "Комментарий удален")
     @ApiResponse(responseCode = "401", description = "Не авторизован")
     @ApiResponse(responseCode = "404", description = "Комментарий не найден")
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
-            @Parameter(description = "ID объявления", required = true)
             @PathVariable Long adId,
-            @Parameter(description = "ID комментария", required = true)
-            @PathVariable Integer commentId) {
-        // TODO: Реализация удаления комментария
+            @PathVariable Long commentId,
+            @RequestHeader("X-User-Id") Long authorId // текущий пользователь
+    ) {
+        commentService.deleteComment(adId, commentId, authorId);
         return ResponseEntity.noContent().build();
     }
 }
