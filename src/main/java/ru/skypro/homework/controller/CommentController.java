@@ -83,7 +83,7 @@ public class CommentController {
     @ApiResponse(responseCode = "204", description = "Комментарий удален")
     @ApiResponse(responseCode = "401", description = "Не авторизован")
     @ApiResponse(responseCode = "404", description = "Комментарий не найден")
-    @DeleteMapping("/{adId}/comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long adId,
             @PathVariable Long commentId,
