@@ -3,6 +3,7 @@ package ru.skypro.homework.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.http.HttpMethod;
 
 import javax.sql.DataSource;
 
@@ -27,7 +27,8 @@ public class WebSecurityConfig {
             "/v3/api-docs/**",
             "/webjars/**",
             "/login",
-            "/register"
+            "/register",
+            "/images/**"  // GET /images/{id} - публичный доступ
     };
 
     @Value("${spring.datasource.url}")
@@ -87,6 +88,9 @@ public class WebSecurityConfig {
                                         .permitAll()
                                         .mvcMatchers(HttpMethod.GET, "/ads/**")
                                         .permitAll()
+                                        // POST /images/upload - только для авторизованных пользователей
+                                        .mvcMatchers(HttpMethod.POST, "/images/upload")
+                                        .hasAnyRole("USER", "ADMIN")
                                         .mvcMatchers("/users/**")
                                         .hasAnyRole("USER", "ADMIN")
                                         .mvcMatchers("/ads/**")
@@ -106,5 +110,4 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
