@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.skypro.homework.entity.RoleEntity;
 import ru.skypro.homework.repository.RoleRepository;
 
+/**
+ * Автоматическая инициализация данных при запуске приложения
+ */
 @Component
 public class DataInitializer implements CommandLineRunner {
 
