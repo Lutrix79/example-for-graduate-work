@@ -70,12 +70,6 @@ public class AdServiceImpl implements AdService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Объявление не найдено"));
         return adMapper.toDto(ad);
     }
-
-    /**
-     * Удаление объявления.
-     * Используем @PreAuthorize для проверки прав.
-     * Пользователь может удалить только свою объяву или если имеет роль ROLE_ADMIN.
-     */
     @PreAuthorize("@adSecurity.hasAccess(#id)")
     @Override
     public void deleteAd(Long id) {
@@ -91,10 +85,6 @@ public class AdServiceImpl implements AdService {
         log.info("Удалено объявление с id: {}", id);
     }
 
-    /**
-     * Обновление объявления.
-     * Плюс проверка доступа с помощью @PreAuthorize.
-     */
     @PreAuthorize("@adSecurity.hasAccess(#id)")
     @Override
     public AdvertisementEntity updateAd(Long id, CreateOrUpdateAd request) {
@@ -118,11 +108,6 @@ public class AdServiceImpl implements AdService {
 
         return adRepository.findAllByAuthor(user);
     }
-
-    /**
-     * Обновление изображения объявления.
-     * Также с проверкой доступа через @PreAuthorize.
-     */
     @PreAuthorize("@adSecurity.hasAccess(#id)")
     @Override
     public AdvertisementEntity updateAdImage(Long id, MultipartFile file) {
@@ -147,11 +132,6 @@ public class AdServiceImpl implements AdService {
 
         return saved;
     }
-
-    /**
-     * Проверка: является ли пользователь автором объявления.
-     * Можно использовать внутри методов или через @PreAuthorize.
-     */
     public boolean isAuthor(Long adId, String username) {
         AdvertisementEntity ad = adRepository.findById(adId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Объявление не найдено"));
