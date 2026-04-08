@@ -3,11 +3,11 @@ package ru.skypro.homework.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Ad {
-    private Integer pk;          // id объявления
-    private Integer author;      // id автора объявления
-    private String image;        // ссылка на картинку объявления
-    private Integer price;       // цена объявления
-    private String title;        // заголовок объявления
+    private Integer pk;
+    private Integer author;
+    private String image;
+    private Integer price;
+    private String title;
 
     public Ad() {
     }

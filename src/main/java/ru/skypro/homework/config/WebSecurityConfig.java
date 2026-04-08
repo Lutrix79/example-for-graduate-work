@@ -1,104 +1,90 @@
 package ru.skypro.homework.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.service.CustomUserDetailsService;
 
 @Configuration
+@RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    private static final String[] AUTH_WHITELIST = {
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/v3/api-docs",
-            "/webjars/**",
-            "/login",
-            "/register",
-            "/images/**"  // GET /images/{id} - публичный доступ
-    };
+    private final UserRepository userRepository;
 
-    @Value("${spring.datasource.url}")
-    private String datasourceUrl;
-
-    @Value("${spring.datasource.username}")
-    private String datasourceUsername;
-
-    @Value("${spring.datasource.password}")
-    private String datasourcePassword;
-
-    @Value("${spring.datasource.driver-class-name}")
-    private String datasourceDriverClassName;
-
-    /**
-     * Создаем DataSource, параметры которого получены из application.properties
-     */
-    @Bean
-    public DataSource dataSource() {
-        return org.springframework.boot.jdbc.DataSourceBuilder.create()
-                .url(datasourceUrl)
-                .username(datasourceUsername)
-                .password(datasourcePassword)
-                .driverClassName(datasourceDriverClassName)
-                .build();
-    }
-
-    /**
-     * Используем JdbcUserDetailsManager, чтобы работать с базой данных
-     */
-    @Bean
-    public UserDetailsManager userDetailsManager(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
-    }
-
-    /**
-     * Настраиваем SecurityFilterChain
-     */
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
-                .authorizeHttpRequests(
-                        authorization ->
-                                authorization
-                                        .mvcMatchers(AUTH_WHITELIST)
-                                        .permitAll()
-                                        .mvcMatchers("/ads/**", "/users/**")
-                                        .mvcMatchers(HttpMethod.POST, "/users/register")
-                                        .permitAll()
-                                        .mvcMatchers(HttpMethod.GET, "/ads/**")
-                                        .permitAll()
-                                        // POST /images/upload - только для авторизованных пользователей
-                                        .mvcMatchers(HttpMethod.POST, "/images/upload")
-                                        .hasAnyRole("USER", "ADMIN")
-                                        .mvcMatchers("/users/**")
-                                        .hasAnyRole("USER", "ADMIN")
-                                        .mvcMatchers("/ads/**")
-                                        .hasAnyRole("USER", "ADMIN")
-                                        .anyRequest()
-                                        .authenticated())
-                .cors()
-                .and()
-                .httpBasic(withDefaults());
-        return http.build();
-    }
-
-    /**
-     * Бин для хэширования паролей bcrypt
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailsService(userRepository);
+    }
+
+    /**
+     * Настройка CORS для Swagger и фронтенда
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .cors() // подключаем CORS
+                .and()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/swagger-ui/**"),
+                                new AntPathRequestMatcher("/swagger-ui.html"),
+                                new AntPathRequestMatcher("/v3/api-docs/**"),
+                                new AntPathRequestMatcher("/swagger-resources/**"),
+                                new AntPathRequestMatcher("/webjars/**")
+                        ).permitAll()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/register"),
+                                new AntPathRequestMatcher("/users/register", "POST")
+                        ).permitAll()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/ads/**", "GET"),
+                                new AntPathRequestMatcher("/images/**", "GET")
+                        ).permitAll()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/ads/**"),
+                                new AntPathRequestMatcher("/images/upload", "POST"),
+                                new AntPathRequestMatcher("/users/**")
+                        ).hasAnyRole("USER", "ADMIN")
+
+                        .anyRequest().authenticated()
+                )
+                .httpBasic();
+
+        return http.build();
     }
 }

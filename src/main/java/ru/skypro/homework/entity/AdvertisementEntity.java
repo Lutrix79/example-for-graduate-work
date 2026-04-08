@@ -6,19 +6,19 @@ import lombok.AllArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
+@Entity
+@Table(name = "advertisements")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "advertisements")
 public class AdvertisementEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
 
-    private String imagePath;
+    @Column(name = "image")
+    private String image;
 
     @Column(name = "title")
     private String title;
@@ -29,21 +29,10 @@ public class AdvertisementEntity {
     @Column(name = "price")
     private Integer price;
 
-    @Column(name = "image")
-    private String image;
-
     @ManyToOne
     @JoinColumn(name = "author_id")
     private UserEntity author;
 
     @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL)
     private List<CommentEntity> comments;
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
 }

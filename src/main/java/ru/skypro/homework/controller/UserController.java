@@ -98,7 +98,6 @@ public class UserController {
         String email = authentication.getName();
         userService.updateUserImage(file, email);
 
-        // Возвращаем обновленного пользователя с новым URL аватара
         User updatedUser = userService.getCurrentUser(email);
 
         log.info("Аватар обновлен для пользователя: {}", email);
@@ -107,18 +106,9 @@ public class UserController {
     }
 
     /**
-     * POST /users/register - Регистрация нового пользователя
+     * Вспомогательный класс для запроса регистрации
      */
-    @PostMapping("/register")
-    @Operation(summary = "Регистрация нового пользователя", operationId = "registerUser")
-    @ApiResponse(responseCode = "201", description = "Пользователь зарегистрирован")
-    @ApiResponse(responseCode = "400", description = "Bad Request")
-    public ResponseEntity<Void> registerUser(@Valid @RequestBody RegisterUserRequest request) {
-        userService.registerUser(request.getUser(), request.getPassword());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
 
-    // Вспомогательный класс для запроса регистрации
     @lombok.Data
     public static class RegisterUserRequest {
         @Valid

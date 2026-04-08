@@ -3,28 +3,37 @@ package ru.skypro.homework.service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
-import ru.skypro.homework.entity.AdvertisementEntity;
 
 import java.util.List;
 
 public interface AdService {
+
     List<Ad> getAllAds();
-    Ad createAd(CreateOrUpdateAd adDto, MultipartFile image, String authorEmail);
+
+    /**
+     * Создает объявление для пользователя с указанным email
+     */
+    Ad createAd(CreateOrUpdateAd adDto, MultipartFile image, String email);
+
     Ad getAdById(Long id);
 
     /**
-     * Удаляет объявление, если у пользователя есть доступ.
+     * Удаляет объявление, если у пользователя с указанным email есть доступ
      */
-    void deleteAd(Long id);
+    void deleteAd(Long id, String email);
 
     /**
-     * Обновляет поля объявления, если у пользователя есть доступ.
+     * Обновляет объявление для пользователя с указанным email
      */
-    AdvertisementEntity updateAd(Long id, CreateOrUpdateAd request);
-    List<AdvertisementEntity> getMyAds(String email);
+    Ad updateAd(Long id, CreateOrUpdateAd request, String email);
 
     /**
-     * Обновляет изображение объявления, если у пользователя есть доступ.
+     * Получить объявления пользователя по email
      */
-    AdvertisementEntity updateAdImage(Long id, MultipartFile file);
+    List<Ad> getMyAds(String email);
+
+    /**
+     * Обновляет изображение объявления для пользователя с указанным email
+     */
+    Ad updateAdImage(Long id, MultipartFile file, String email);
 }
