@@ -1,10 +1,13 @@
 package ru.skypro.homework.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "Данные для обновления пользователя")
 public class UpdateUser {
 
@@ -12,35 +15,24 @@ public class UpdateUser {
             minLength = 3,
             maxLength = 10,
             example = "John")
-    @Size(min = 3, max = 10)
     private String firstName;
 
     @Schema(description = "фамилия пользователя",
             minLength = 3,
             maxLength = 10,
             example = "Doe")
-    @Size(min = 3, max = 10)
     private String lastName;
 
     @Schema(description = "телефон пользователя",
             pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}",
             example = "+7 (123) 456-78-90")
-    @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     private String phone;
-
-    public UpdateUser() {}
-
-    public UpdateUser(String firstName, String lastName, String phone) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-    }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public String getLastname() {
+    public String getLastName() {
         return lastName;
     }
 
@@ -52,8 +44,8 @@ public class UpdateUser {
         this.firstName = firstName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastName = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setPhone(String phone) {

@@ -8,19 +8,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.service.CommentService;
 
 import jakarta.validation.Valid;
-import java.util.ArrayList;
 
 @Slf4j
-@CrossOrigin(value = "http://localhost:8080")
+@CrossOrigin(value = "http://localhost:3000")  // Фронтенд на порту 3000
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Комментарии", description = "API для управления комментариями")
 public class CommentController {
+
+    private final CommentService commentService;
 
     @GetMapping("/ads/{id}/comments")
     @Operation(
@@ -36,14 +41,14 @@ public class CommentController {
             @ApiResponse(responseCode = "401", description = "Пользователь не авторизован"),
             @ApiResponse(responseCode = "404", description = "Объявление не найдено")
     })
-    public ResponseEntity<Comments> getComments(@PathVariable Integer id) {
-        Comments comments = new Comments();
-        comments.setCount(0);
-        comments.setResults(new ArrayList<>());
+    public ResponseEntity<Comments> getComments(@PathVariable("id") Integer adId) {
+        log.info("Getting comments for ad with id: {}", adId);
+        Comments comments = commentService.getCommentsByAdId(adId);
         return ResponseEntity.ok(comments);
     }
 
     @PostMapping("/ads/{id}/comments")
+    @PreAuthorize("isAuthenticated()")
     @Operation(
             summary = "Добавление комментария к объявлению",
             description = "Создает новый комментарий для указанного объявления"
@@ -58,20 +63,19 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Объявление не найдено")
     })
     public ResponseEntity<Comment> addComment(
-            @PathVariable Integer id,
-            @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment) {
+            @PathVariable("id") Integer adId,
+            @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment,
+            Authentication authentication) {
 
-        Comment comment = new Comment();
-        comment.setAuthor(1);
-        comment.setAuthorImage("/images/default-avatar.jpg");
-        comment.setAuthorFirstName("John");
-        comment.setCreatedAt(System.currentTimeMillis());
-        comment.setPk(1);
-        comment.setText(createOrUpdateComment.getText());
-        return ResponseEntity.ok(comment);
+        log.info("Adding comment to ad {} by user: {}", adId, authentication.getName());
+
+        return commentService.addComment(adId, createOrUpdateComment, authentication.getName())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @DeleteMapping("/ads/{adId}/comments/{commentId}")
+    @PreAuthorize("isAuthenticated() and @commentService.isCommentOwner(#commentId, authentication.name)")
     @Operation(
             summary = "Удаление комментария",
             description = "Удаляет комментарий по ID"
@@ -84,11 +88,19 @@ public class CommentController {
     })
     public ResponseEntity<Void> deleteComment(
             @PathVariable("adId") Integer adId,
-            @PathVariable("commentId") Integer commentId) {
-        return ResponseEntity.ok().build();
+            @PathVariable("commentId") Integer commentId,
+            Authentication authentication) {
+
+        log.info("Deleting comment {} by user: {}", commentId, authentication.getName());
+
+        if (commentService.deleteComment(commentId)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PatchMapping("/ads/{adId}/comments/{commentId}")
+    @PreAuthorize("isAuthenticated() and @commentService.isCommentOwner(#commentId, authentication.name)")
     @Operation(
             summary = "Обновление комментария",
             description = "Обновляет текст комментария по ID"
@@ -106,15 +118,13 @@ public class CommentController {
     public ResponseEntity<Comment> updateComment(
             @PathVariable("adId") Integer adId,
             @PathVariable("commentId") Integer commentId,
-            @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment) {
+            @Valid @RequestBody CreateOrUpdateComment createOrUpdateComment,
+            Authentication authentication) {
 
-        Comment comment = new Comment();
-        comment.setAuthor(1);
-        comment.setAuthorImage("/images/default-avatar.jpg");
-        comment.setAuthorFirstName("John");
-        comment.setCreatedAt(System.currentTimeMillis());
-        comment.setPk(commentId);
-        comment.setText(createOrUpdateComment.getText());
-        return ResponseEntity.ok(comment);
+        log.info("Updating comment {} by user: {}", commentId, authentication.getName());
+
+        return commentService.updateComment(commentId, createOrUpdateComment)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

@@ -6,36 +6,26 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.NewPassword;
-import ru.skypro.homework.dto.Role;
-import ru.skypro.homework.dto.UpdateUser;
-import ru.skypro.homework.dto.User;
+import ru.skypro.homework.dto.*;
+import ru.skypro.homework.service.UserService;
 
-import jakarta.validation.Valid;
-
-
+@Slf4j
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 @Tag(name = "Пользователи", description = "API для управления пользователями")
 public class UserController {
 
-    @PostMapping("/set_password")
-    @Operation(
-            summary = "Обновление пароля",
-            description = "Изменяет пароль авторизованного пользователя"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Пароль успешно обновлен"),
-            @ApiResponse(responseCode = "401", description = "Пользователь не авторизован"),
-            @ApiResponse(responseCode = "403", description = "Доступ запрещен")
-    })
-    public ResponseEntity<Void> setPassword(@Valid @RequestBody NewPassword newPasswordDto) {
-        return ResponseEntity.ok().build();
-    }
+    private final UserService userService;
 
     @GetMapping("/me")
     @Operation(
@@ -50,16 +40,12 @@ public class UserController {
             ),
             @ApiResponse(responseCode = "401", description = "Пользователь не авторизован")
     })
-    public ResponseEntity<User> getUser() {
-        User user = new User();
-        user.setId(1);
-        user.setEmail("user@example.com");
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setPhone("+7 (123) 456-78-90");
-        user.setRole(Role.USER);
-        user.setImage("/images/default-avatar.jpg");
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> getUser(Authentication authentication) {
+        log.info("Getting user info for: {}", authentication.getName());
+
+        return userService.getUserByEmail(authentication.getName())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
     @PatchMapping("/me")
@@ -75,8 +61,19 @@ public class UserController {
             ),
             @ApiResponse(responseCode = "401", description = "Пользователь не авторизован")
     })
-    public ResponseEntity<UpdateUser> updateUser(@Valid @RequestBody UpdateUser updateUserDto) {
-        return ResponseEntity.ok(updateUserDto);
+    public ResponseEntity<UpdateUser> updateUser(@RequestBody UpdateUser updateUser,
+                                                 Authentication authentication) {
+        log.info("Updating user info for: {}", authentication.getName());
+
+        return userService.updateUser(authentication.getName(), updateUser)
+                .map(user -> {
+                    UpdateUser response = new UpdateUser();
+                    response.setFirstName(user.getFirstName());
+                    response.setLastName(user.getLastName());
+                    response.setPhone(user.getPhone());
+                    return ResponseEntity.ok(response);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -88,7 +85,13 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Аватар успешно обновлен"),
             @ApiResponse(responseCode = "401", description = "Пользователь не авторизован")
     })
-    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image) {
+    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image,
+                                                Authentication authentication) {
+        log.info("Updating avatar for user: {}", authentication.getName());
+
+        String imageUrl = "/images/avatars/" + authentication.getName() + ".jpg";
+        userService.updateUserImage(authentication.getName(), imageUrl);
+
         return ResponseEntity.ok().build();
     }
 }

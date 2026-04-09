@@ -1,14 +1,11 @@
 package ru.skypro.homework.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import jakarta.persistence.Id;
+import ru.skypro.homework.dto.Role;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
 public class UserEntity {
 
     @Id
@@ -31,7 +28,8 @@ public class UserEntity {
     private String phone;
 
     @Column(nullable = false, length = 10)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private String image;
 
@@ -59,7 +57,7 @@ public class UserEntity {
         return phone;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
@@ -91,8 +89,9 @@ public class UserEntity {
         this.phone = phone;
     }
 
-    public void setRole(String role) {
+    public Role setRole(Role role) {
         this.role = role;
+        return role;
     }
 
     public void setImage(String image) {

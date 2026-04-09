@@ -7,7 +7,7 @@ public class User {
 
     @Schema(description = "id пользователя",
             example = "1")
-    private Integer id;  // ✅ Integer вместо int (может быть null)
+    private Integer id;
 
     @Schema(description = "логин пользователя",
             example = "john_doe@example.com")
