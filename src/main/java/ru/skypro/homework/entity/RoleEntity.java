@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Сущность роли пользователя для хранения роли (например, USER или ADMIN).
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,9 +17,10 @@ import javax.persistence.*;
 public class RoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
 }

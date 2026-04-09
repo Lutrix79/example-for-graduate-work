@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.List;
 
+/**
+ * DTO-класс, представляющий контейнер для списка комментариев.
+ * Включает общее количество комментариев и список самих комментариев.
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,6 +21,6 @@ public class Comments {
     private Integer count;
 
     @Schema(description = "список комментариев")
-    private List<Comment> results; // Нужен класс Comment
+    private List<Comment> results;
 
 }

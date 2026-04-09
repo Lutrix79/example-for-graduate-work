@@ -1,13 +1,16 @@
 package ru.skypro.homework.service;
 
 import ru.skypro.homework.dto.Comment;
+import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
 
-import java.util.List;
-
+/**
+ * Интерфейс для операций с комментариями.
+ * Включает получение комментариев по объявлению, добавление, обновление и удаление комментариев.
+ */
 public interface CommentService {
 
-    List<Comment> getCommentsByAdId(Integer adId);
+    Comments getCommentsByAdId(Integer adId);
 
     Comment addComment(Integer adId, CreateOrUpdateComment commentRequest, String authorEmail);
 

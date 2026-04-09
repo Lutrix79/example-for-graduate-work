@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.List;
 
+/**
+ * DTO-класс, представляющий контейнер для списка объявлений.
+ * Включает общее количество объявлений и список их деталей.
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,5 +21,5 @@ public class Ads {
     private Integer count;
 
     @Schema(description = "список объявлений")
-    private List<Ad> results; // Нужен класс Ad
+    private List<Ad> results;
 }

@@ -1,110 +1,126 @@
 package ru.skypro.homework.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ru.skypro.homework.repository.UserRepository;
+import ru.skypro.homework.service.CustomUserDetailsService;
 
-import javax.sql.DataSource;
-
-import static org.springframework.security.config.Customizer.withDefaults;
-
+/**
+ * Конфигурационный класс для настройки безопасности в приложении.
+ * В этом классе задаются правила авторизации, настройки CORS, обработка аутентификации.
+ */
 @Configuration
+@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    private static final String[] AUTH_WHITELIST = {
-            "/swagger-resources/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/webjars/**",
-            "/login",
-            "/register"
-    };
+    private final UserRepository userRepository;
 
-    @Value("${spring.datasource.url}")
-    private String datasourceUrl;
-
-    @Value("${spring.datasource.username}")
-    private String datasourceUsername;
-
-    @Value("${spring.datasource.password}")
-    private String datasourcePassword;
-
-    @Value("${spring.datasource.driver-class-name}")
-    private String datasourceDriverClassName;
-
-    /**
-     * Создаем DataSource, параметры которого получены из application.properties
-     */
-    @Bean
-    public DataSource dataSource() {
-        return org.springframework.boot.jdbc.DataSourceBuilder.create()
-                .url(datasourceUrl)
-                .username(datasourceUsername)
-                .password(datasourcePassword)
-                .driverClassName(datasourceDriverClassName)
-                .build();
-    }
-
-    /**
-     * Используем JdbcUserDetailsManager, чтобы работать с базой данных
-     */
-    @Bean
-    public UserDetailsManager userDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
-        manager.setUsersByUsernameQuery(
-                "select email, password, coalesce(enabled, true) from users where email = ?"
-        );
-        manager.setAuthoritiesByUsernameQuery(
-                "select u.email, concat('ROLE_', r.name) " +
-                        "from users u join roles r on u.role_id = r.id where u.email = ?"
-        );
-        return manager;
-    }
-
-    /**
-     * Настраиваем SecurityFilterChain
-     */
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
-                .authorizeHttpRequests(
-                        authorization ->
-                                authorization
-                                        .mvcMatchers(AUTH_WHITELIST)
-                                        .permitAll()
-                                        .mvcMatchers(HttpMethod.POST, "/users/register")
-                                        .permitAll()
-                                        .mvcMatchers(HttpMethod.GET, "/ads/**")
-                                        .permitAll()
-                                        .mvcMatchers("/users/**")
-                                        .hasAnyRole("USER", "ADMIN")
-                                        .mvcMatchers("/ads/**")
-                                        .hasAnyRole("USER", "ADMIN")
-                                        .anyRequest()
-                                        .authenticated())
-                .cors()
-                .and()
-                .httpBasic(withDefaults());
-        return http.build();
-    }
-
-    /**
-     * Бин для хэширования паролей bcrypt
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Bean для получения данных о пользователе.
+     * Использует сервис CustomUserDetailsService, который работает с UserRepository.
+     *
+     * @return сервис деталей пользователя.
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new CustomUserDetailsService(userRepository);
+    }
+
+    /**
+     * Bean для провайдера аутентификации.
+     * Использует ранее определенный UserDetailsService и PasswordEncoder.
+     *
+     * @return провайдер аутентификации.
+     */
+    @Bean public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder()); return provider;
+    }
+
+    /**
+     * Настройка CORS для проекта.
+     * Позволяет фронтенду и Swagger обращаться к API с любого происхождения.
+     *
+     * @return источник конфигурации CORS.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    /**
+     * Основная настройка фильтров безопасности.
+     * Определяет, какие маршруты доступны без авторизации, а какие требуют авторизации.
+     *
+     * @param http главный объект конфигурации HttpSecurity.
+     * @return настроенное SecurityFilterChain.
+     * @throws Exception возможные ошибки при настройке.
+     */
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .cors()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/swagger-ui/**"),
+                                new AntPathRequestMatcher("/swagger-ui.html"),
+                                new AntPathRequestMatcher("/v3/api-docs/**"),
+                                new AntPathRequestMatcher("/swagger-resources/**"),
+                                new AntPathRequestMatcher("/webjars/**")
+                        ).permitAll()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/register")
+                        ).permitAll()
+
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/ads/**", "GET"),
+                                new AntPathRequestMatcher("/images/**", "GET")
+                        ).permitAll()
+
+                        .anyRequest().authenticated()
+                )
+                .httpBasic()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint((request, response, authException) ->
+                        response.sendError(401, "Unauthorized"));
+
+        return http.build();
+    }
 }

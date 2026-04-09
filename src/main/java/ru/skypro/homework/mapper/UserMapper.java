@@ -4,6 +4,10 @@ import ru.skypro.homework.dto.User;
 import ru.skypro.homework.entity.RoleEntity;
 import ru.skypro.homework.entity.UserEntity;
 
+/**
+ * Маппер для преобразования между UserEntity и User DTO.
+ * Включает преобразование роли и восстановление всех основных данных пользователя.
+ */
 @Component
 public class UserMapper {
 
@@ -28,7 +32,7 @@ public class UserMapper {
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
         entity.setPhone(dto.getPhone());
-        entity.setImage(dto.getImage()); // если нужно
+        entity.setImage(dto.getImage());
 
         if (dto.getRole() != null) {
             RoleEntity roleEntity = new RoleEntity();

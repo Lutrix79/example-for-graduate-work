@@ -2,17 +2,27 @@ package ru.skypro.homework.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.Ad;
+import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
-import ru.skypro.homework.entity.AdvertisementEntity;
+import ru.skypro.homework.dto.ExtendedAd;
 
-import java.util.List;
-
+/**
+ * Интерфейс для операций с объявлениями.
+ * Включает создание, получение, обновление, удаление объявлений, а также работу с изображениями.
+ */
 public interface AdService {
-    List<Ad> getAllAds();
-    Ad createAd(CreateOrUpdateAd adDto, MultipartFile image, String authorEmail);
-    Ad getAdById(Long id);
-    void deleteAd(Long id);
-    AdvertisementEntity updateAd(Long id, CreateOrUpdateAd request);
-    List<AdvertisementEntity> getMyAds(String email);
-    AdvertisementEntity updateAdImage(Long id, MultipartFile file);
+
+    Ads getAllAds();
+
+    Ad createAd(CreateOrUpdateAd adDto, MultipartFile image, String email);
+
+    ExtendedAd getAdById(Integer id);
+
+    void deleteAd(Integer id, String email);
+
+    Ad updateAd(Integer id, CreateOrUpdateAd request, String email);
+
+    Ads getMyAds(String email);
+
+    byte[] updateAdImage(Integer id, MultipartFile file, String email);
 }

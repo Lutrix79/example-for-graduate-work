@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.skypro.homework.dto.Comment;
+import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
 import ru.skypro.homework.entity.AdvertisementEntity;
 import ru.skypro.homework.entity.CommentEntity;
@@ -18,6 +19,11 @@ import ru.skypro.homework.service.CommentService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Реализация сервиса для работы с комментариями.
+ * Включает операции получения комментариев по объявлению, добавление, обновление и удаление комментариев.
+ * Использует проверку доступа для редактирования и удаления комментариев.
+ */
 @Service
 public class CommentServiceImpl implements CommentService {
 
@@ -37,16 +43,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getCommentsByAdId(Integer adId) {
+    public Comments getCommentsByAdId(Integer adId) {
         List<CommentEntity> commentEntities = commentRepository.findByAdId(adId);
-        return commentEntities.stream()
+        List<Comment> results = commentEntities.stream()
                 .map(commentMapper::toDto)
                 .toList();
+        return Comments.builder()
+                .count(results.size())
+                .results(results)
+                .build();
     }
 
     @Override
     public Comment addComment(Integer adId, CreateOrUpdateComment commentRequest, String authorEmail) {
-        AdvertisementEntity ad = advertisementRepository.findById(adId.longValue())
+        AdvertisementEntity ad = advertisementRepository.findById(adId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Объявление не найдено"));
 
         UserEntity author = userRepository.findByEmail(authorEmail)
@@ -61,9 +71,6 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDto(saved);
     }
 
-    /**
-     * Обновление комментария (только автор или ADMIN)
-     */
     @PreAuthorize("@commentSecurity.hasAccess(#commentId)")
     @Override
     public Comment updateComment(Integer adId, Integer commentId, CreateOrUpdateComment commentRequest) {
@@ -81,9 +88,6 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toDto(updated);
     }
 
-    /**
-     * Удаление комментария (только автор или ADMIN)
-     */
     @PreAuthorize("@commentSecurity.hasAccess(#commentId)")
     @Override
     public void deleteComment(Integer adId, Integer commentId) {

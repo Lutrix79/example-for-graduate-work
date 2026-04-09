@@ -6,24 +6,33 @@ import lombok.AllArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Сущность объявления, отображающая информацию об объявлении.
+ * Включает идентификатор, изображение, название, описание, цену,
+ * автора и список комментариев.
+ */
+@Entity
+@Table(name = "advertisements")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "advertisements")
 public class AdvertisementEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "price")
     private Integer price;
-
-    private String image;
 
     @ManyToOne
     @JoinColumn(name = "author_id")

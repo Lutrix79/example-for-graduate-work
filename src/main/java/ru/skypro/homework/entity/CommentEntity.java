@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Сущность комментария, связанная с объявлением и автором.
+ * Включает идентификатор, текст, дату создания, автора и объявление.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,9 +19,10 @@ public class CommentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(name = "text", nullable = false)
     private String text;
 
     @Column(name = "created_at")

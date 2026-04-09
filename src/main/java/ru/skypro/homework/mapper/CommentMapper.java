@@ -6,6 +6,11 @@ import ru.skypro.homework.dto.CreateOrUpdateComment;
 import ru.skypro.homework.entity.CommentEntity;
 
 import java.time.ZoneId;
+
+/**
+ * Маппер для преобразования между CommentEntity и Comment DTO.
+ * Включает преобразование даты в миллисекунды и получение информации о авторе.
+ */
 @Component
 public class CommentMapper {
     public Comment toDto(CommentEntity entity) {
@@ -23,7 +28,7 @@ public class CommentMapper {
         if (entity.getAuthor() != null) {
             dto.setAuthor(entity.getAuthor().getId());
             dto.setAuthorFirstName(entity.getAuthor().getFirstName());
-            dto.setAuthorImage(entity.getAuthor().getImage()); // поле UserEntity.image
+            dto.setAuthorImage(entity.getAuthor().getImage());
         }
 
         return dto;

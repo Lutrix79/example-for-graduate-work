@@ -1,11 +1,16 @@
 package ru.skypro.homework.dto;
 
+/**
+ * DTO-класс для представления объявления.
+ * Содержит информацию об уникальном идентификаторе, авторе, изображении, цене и названии объявления.
+ */
 public class Ad {
-    private Integer pk;          // id объявления
-    private Integer author;      // id автора объявления
-    private String image;        // ссылка на картинку объявления
-    private Integer price;       // цена объявления
-    private String title;        // заголовок объявления
+
+    private Integer pk;
+    private Integer author;
+    private String image;
+    private Integer price;
+    private String title;
 
     public Ad() {
     }
@@ -49,4 +54,5 @@ public class Ad {
     public void setTitle(String title) {
         this.title = title;
     }
+
 }
