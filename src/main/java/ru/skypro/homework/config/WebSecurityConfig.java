@@ -51,8 +51,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ads", "/ads/*").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/ads/*/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ads", "/ads/*", "/ads/*/comments").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement()

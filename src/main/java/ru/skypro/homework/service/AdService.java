@@ -98,7 +98,7 @@ public class AdService {
         log.debug("Getting ads for user: {}", email);
 
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден: " + email));
 
         var ads = adRepository.findByAuthorId(user.getId());
         return adMapper.toAdsDto(ads);
@@ -109,7 +109,7 @@ public class AdService {
         log.info("Updating image for ad: {}", adId);
 
         AdEntity ad = adRepository.findById(adId)
-                .orElseThrow(() -> new RuntimeException("Ad not found with id: " + adId));
+                .orElseThrow(() -> new RuntimeException("Айди объявления не найдено: " + adId));
 
         try {
             Path uploadPath = Paths.get(IMAGE_DIRECTORY);
@@ -126,11 +126,11 @@ public class AdService {
             ad.setImage(imageUrl);
             adRepository.save(ad);
 
-            log.info("Image updated successfully for ad: {}", adId);
+            log.info("Фотография объявления обновлена успешно: {}", adId);
             return imageUrl;
 
         } catch (IOException e) {
-            log.error("Failed to save image for ad: {}", adId, e);
+            log.error("Не удалось сохранить картинку объявления: {}", adId, e);
             throw new RuntimeException("Failed to save image", e);
         }
     }

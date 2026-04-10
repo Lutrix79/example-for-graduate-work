@@ -5,40 +5,31 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Расширенная информация об объявлении")
 public class ExtendedAd {
 
-    @Schema(description = "id объявления",
-            example = "100")
+    @Schema(description = "id объявления")
     private int pk;
 
-    @Schema(description = "имя автора объявления",
-            example = "John")
+    @Schema(description = "имя автора объявления")
     private String authorFirstName;
 
-    @Schema(description = "фамилия автора объявления",
-            example = "Doe")
+    @Schema(description = "фамилия автора объявления")
     private String authorLastName;
 
-    @Schema(description = "описание объявления",
-            example = "Отличный телефон, в хорошем состоянии")
+    @Schema(description = "описание объявления")
     private String description;
 
-    @Schema(description = "логин автора объявления",
-            example = "john@example.com")
+    @Schema(description = "логин автора объявления")
     private String email;
 
-    @Schema(description = "ссылка на картинку объявления",
-            example = "/images/ad_1.jpg")
+    @Schema(description = "ссылка на картинку объявления")
     private String image;
 
-    @Schema(description = "телефон автора объявления",
-            example = "+7 (123) 456-78-90")
+    @Schema(description = "телефон автора объявления")
     private String phone;
 
-    @Schema(description = "цена объявления",
-            example = "50000")
+    @Schema(description = "цена объявления")
     private int price;
 
-    @Schema(description = "заголовок объявления",
-            example = "Продам iPhone 13")
+    @Schema(description = "заголовок объявления")
     private String title;
 
     public ExtendedAd() {

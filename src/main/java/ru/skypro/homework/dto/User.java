@@ -5,33 +5,25 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Информация о пользователе")
 public class User {
 
-    @Schema(description = "id пользователя",
-            example = "1")
+    @Schema(description = "id пользователя")
     private Integer id;
 
-    @Schema(description = "логин пользователя",
-            example = "john_doe@example.com")
+    @Schema(description = "логин пользователя")
     private String email;
 
-    @Schema(description = "имя пользователя",
-            example = "John")
+    @Schema(description = "имя пользователя")
     private String firstName;
 
-    @Schema(description = "фамилия пользователя",
-            example = "Doe")
+    @Schema(description = "фамилия пользователя")
     private String lastName;
 
-    @Schema(description = "телефон пользователя",
-            example = "+7 (123) 456-78-90")
+    @Schema(description = "телефон пользователя")
     private String phone;
 
-    @Schema(description = "роль пользователя",
-            allowableValues = {"USER", "ADMIN"},
-            example = "USER")
+    @Schema(description = "роль пользователя")
     private Role role;
 
-    @Schema(description = "ссылка на аватар пользователя",
-            example = "/images/avatar.jpg")
+    @Schema(description = "ссылка на аватар пользователя")
     private String image;
 
     public User() {

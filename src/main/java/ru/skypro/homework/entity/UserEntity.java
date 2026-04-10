@@ -10,27 +10,29 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "айди")
     private Integer id;
 
-    @Column(nullable = false, unique = true, length = 32)
+    @Column(name = "почта", nullable = false, unique = true, length = 32)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "пароль", nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false, length = 16)
+    @Column(name = "имя", nullable = false, length = 16)
     private String firstName;
 
-    @Column(nullable = false, length = 16)
+    @Column(name = "фамилия", nullable = false, length = 16)
     private String lastName;
 
-    @Column(nullable = false, length = 20)
+    @Column(name = "телефон", nullable = false, length = 20)
     private String phone;
 
-    @Column(nullable = false, length = 10)
+    @Column(name = "роль", nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "картинка")
     private String image;
 
     public Integer getId() {

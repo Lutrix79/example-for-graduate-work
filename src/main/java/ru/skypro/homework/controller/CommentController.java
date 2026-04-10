@@ -19,7 +19,7 @@ import ru.skypro.homework.service.CommentService;
 import jakarta.validation.Valid;
 
 @Slf4j
-@CrossOrigin(value = "http://localhost:3000")  // Фронтенд на порту 3000
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Комментарии", description = "API для управления комментариями")

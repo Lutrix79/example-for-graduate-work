@@ -7,17 +7,11 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "Данные для смены пароля")
 public class NewPassword {
 
-    @Schema(description = "текущий пароль",
-            minLength = 8,
-            maxLength = 16,
-            example = "currentPass123")
+    @Schema(description = "текущий пароль")
     @Size(min = 8, max = 16)
     private String currentPassword;
 
-    @Schema(description = "новый пароль",
-            minLength = 8,
-            maxLength = 16,
-            example = "newPass123")
+    @Schema(description = "новый пароль")
     @Size(min = 8, max = 16)
     private String newPassword;
 

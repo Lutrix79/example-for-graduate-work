@@ -5,24 +5,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Краткая информация об объявлении")
 public class Ad {
 
-    @Schema(description = "id автора объявления",
-            example = "1")
+    @Schema(description = "id автора объявления")
     private int author;
 
-    @Schema(description = "ссылка на картинку объявления",
-            example = "/images/ad_1.jpg")
+    @Schema(description = "ссылка на картинку объявления")
     private String image;
 
-    @Schema(description = "id объявления",
-            example = "100")
+    @Schema(description = "id объявления")
     private int pk;
 
-    @Schema(description = "цена объявления",
-            example = "50000")
+    @Schema(description = "цена объявления")
     private int price;
 
-    @Schema(description = "заголовок объявления",
-            example = "Продам iPhone 13")
+    @Schema(description = "заголовок объявления")
     private String title;
 
     public Ad() {

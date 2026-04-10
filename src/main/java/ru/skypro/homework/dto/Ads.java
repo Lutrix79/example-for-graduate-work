@@ -7,8 +7,7 @@ import java.util.List;
 @Schema(description = "Список объявлений")
 public class Ads {
 
-    @Schema(description = "общее количество объявлений",
-            example = "10")
+    @Schema(description = "общее количество объявлений")
     private int count;
 
     @Schema(description = "список объявлений")

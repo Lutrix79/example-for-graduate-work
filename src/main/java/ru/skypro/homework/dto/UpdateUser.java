@@ -11,21 +11,14 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Данные для обновления пользователя")
 public class UpdateUser {
 
-    @Schema(description = "имя пользователя",
-            minLength = 3,
-            maxLength = 10,
-            example = "John")
+    @Schema(description = "имя пользователя")
     private String firstName;
 
-    @Schema(description = "фамилия пользователя",
-            minLength = 3,
-            maxLength = 10,
-            example = "Doe")
+    @Schema(description = "фамилия пользователя")
     private String lastName;
 
     @Schema(description = "телефон пользователя",
-            pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}",
-            example = "+7 (123) 456-78-90")
+            pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     private String phone;
 
     public String getFirstName() {

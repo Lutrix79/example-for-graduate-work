@@ -13,17 +13,19 @@ public class AdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "айди")
     private Integer id;
 
-    @Column(nullable = false, length = 32)
+    @Column(name = "заголовок", nullable = false, length = 32)
     private String title;
 
-    @Column(nullable = false)
+    @Column(name = "цена",nullable = false)
     private Integer price;
 
-    @Column(nullable = false, length = 64)
+    @Column(name = "описание",nullable = false, length = 64)
     private String description;
 
+    @Column(name = "картинка")
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -9,28 +9,22 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Информация о комментарии")
 public class Comment {
 
-    @Schema(description = "id автора комментария",
-            example = "1")
+    @Schema(description = "id автора комментария")
     private int author;
 
-    @Schema(description = "ссылка на аватар автора комментария",
-            example = "/images/avatar.jpg")
+    @Schema(description = "ссылка на аватар автора комментария")
     private String authorImage;
 
-    @Schema(description = "имя создателя комментария",
-            example = "John")
+    @Schema(description = "имя создателя комментария")
     private String authorFirstName;
 
-    @Schema(description = "дата и время создания комментария в миллисекундах",
-            example = "1640995200000")
+    @Schema(description = "дата и время создания комментария в миллисекундах")
     private long createdAt;
 
-    @Schema(description = "id комментария",
-            example = "50")
+    @Schema(description = "id комментария")
     private int pk;
 
-    @Schema(description = "текст комментария",
-            example = "Отличное объявление!")
+    @Schema(description = "текст комментария")
     private String text;
 
     public Comment(int author, String authorImage, String authorFirstName, long createdAt, int pk, String text) {

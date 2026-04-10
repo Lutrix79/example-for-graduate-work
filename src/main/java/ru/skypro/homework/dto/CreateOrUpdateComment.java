@@ -7,11 +7,7 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "Данные для создания или обновления комментария")
 public class CreateOrUpdateComment {
 
-    @Schema(description = "текст комментария",
-            minLength = 8,
-            maxLength = 64,
-            required = true,
-            example = "Отличное объявление!")
+    @Schema(description = "текст комментария")
     @Size(min = 8, max = 64)
     private String text;
 

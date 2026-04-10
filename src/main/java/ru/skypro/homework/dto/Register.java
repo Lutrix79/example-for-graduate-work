@@ -10,43 +10,28 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "Данные для регистрации пользователя")
 public class Register {
 
-    @Schema(description = "логин",
-            minLength = 4,
-            maxLength = 32,
-            example = "john_doe")
+    @Schema(description = "логин")
     @Size(min = 4, max = 32)
 
     private String username;
-    @Schema(description = "пароль",
-            minLength = 8,
-            maxLength = 16,
-            example = "password123")
+    @Schema(description = "пароль")
     @Size(min = 8, max = 16)
     private String password;
 
-    @Schema(description = "имя пользователя",
-            minLength = 2,
-            maxLength = 16,
-            example = "John")
+    @Schema(description = "имя пользователя")
     @Size(min = 2, max = 16)
     private String firstName;
 
-    @Schema(description = "фамилия пользователя",
-            minLength = 2,
-            maxLength = 16,
-            example = "Doe")
+    @Schema(description = "фамилия пользователя")
     @Size(min = 2, max = 16)
     private String lastName;
 
     @Schema(description = "телефон пользователя",
-            pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}",
-            example = "+7 (123) 456-78-90")
+            pattern = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     @Pattern(regexp = "\\+7\\s?\\(?\\d{3}\\)?\\s?\\d{3}-?\\d{2}-?\\d{2}")
     private String phone;
 
-    @Schema(description = "роль пользователя",
-            allowableValues = {"USER", "ADMIN"},
-            example = "USER")
+    @Schema(description = "роль пользователя")
     private Role role;
 
     public Register() {}
