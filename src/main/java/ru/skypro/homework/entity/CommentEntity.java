@@ -9,13 +9,13 @@ public class CommentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "айди")
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "текст", nullable = false, length = 64)
+    @Column(name = "text", nullable = false, length = 64)
     private String text;
 
-    @Column(name = "cоздать", nullable = false)
+    @Column(name = "createAt", nullable = false)
     private Long createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
