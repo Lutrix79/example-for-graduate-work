@@ -59,7 +59,7 @@
      ```
 
 3. **Настройка базы данных:**
-   Проект использует миграции Flyway, поэтому создайте пустую базу данных и настройте подключение в `src/main/resources/application.properties`:
+   Проект использует миграции Flyway, настройте подключение в `src/main/resources/application.properties`:
    ```properties
    spring.datasource.url=jdbc:postgresql://localhost:5432/example-for-graduate-work
    spring.datasource.username=adm
