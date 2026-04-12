@@ -145,20 +145,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(
-            Exception ex,
-            HttpServletRequest request) {
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handleGenericException(
+                Exception ex,
+                HttpServletRequest request) {
 
-        log.error("Внутренняя ошибка сервера: ");
+            log.error("Exception occurred: ", ex);
 
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Внутренняя ошибка сервера",
-                request.getRequestURI(),
-                "INTERNAL_SERVER_ERROR"
-        );
+            ErrorResponse error = new ErrorResponse(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    ex.getMessage(),
+                    request.getRequestURI(),
+                    "INTERNAL_SERVER_ERROR"
+            );
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
 }

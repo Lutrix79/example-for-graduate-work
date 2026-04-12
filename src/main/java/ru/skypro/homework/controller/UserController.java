@@ -8,17 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.*;
+import ru.skypro.homework.dto.UpdateUser;
+import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
 
 @Slf4j
-@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -43,14 +42,17 @@ public class UserController {
     public ResponseEntity<User> getUser(Authentication authentication) {
         log.info("Getting user info for: {}", authentication.getName());
 
-        return userService.getUserByEmail(authentication.getName())
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+        User user = userService.getUserByEmail(authentication.getName());
+
+        if (user.getImage() != null && !user.getImage().isEmpty()) {
+            user.setImage(user.getImage() + "?v=" + System.currentTimeMillis());
+        }
+
+        return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/me")
     @Operation(
-            summary = "Обновление информации об авторизованном пользователе",
             description = "Обновляет данные текущего пользователя"
     )
     @ApiResponses(value = {
@@ -65,20 +67,18 @@ public class UserController {
                                                  Authentication authentication) {
         log.info("Updating user info for: {}", authentication.getName());
 
-        return userService.updateUser(authentication.getName(), updateUser)
-                .map(user -> {
-                    UpdateUser response = new UpdateUser();
-                    response.setFirstName(user.getFirstName());
-                    response.setLastName(user.getLastName());
-                    response.setPhone(user.getPhone());
-                    return ResponseEntity.ok(response);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        User updatedUser = userService.updateUser(authentication.getName(), updateUser);
+
+        UpdateUser response = new UpdateUser();
+        response.setFirstName(updatedUser.getFirstName());
+        response.setLastName(updatedUser.getLastName());
+        response.setPhone(updatedUser.getPhone());
+
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
-            summary = "Обновление аватара авторизованного пользователя",
             description = "Загружает новый аватар для текущего пользователя"
     )
     @ApiResponses(value = {
@@ -88,10 +88,24 @@ public class UserController {
     public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image,
                                                 Authentication authentication) {
         log.info("Updating avatar for user: {}", authentication.getName());
-
-        String imageUrl = "/images/avatars/" + authentication.getName() + ".jpg";
-        userService.updateUserImage(authentication.getName(), imageUrl);
-
+        userService.updateUserImage(authentication.getName(), image);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me/image")
+    @Operation(
+            description = "Возвращает изображение аватара текущего пользователя"
+    )
+    public ResponseEntity<byte[]> getUserImage(Authentication authentication) {
+        byte[] image = userService.getUserImage(authentication.getName());
+
+        if (image == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .body(image);
     }
 }

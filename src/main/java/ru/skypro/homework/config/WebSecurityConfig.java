@@ -38,7 +38,7 @@ public class WebSecurityConfig {
             "/v3/api-docs/**",
             "/v3/api-docs",
             "/webjars/**",
-            "/h2-console/**"
+            "/avatars/**",
     };
 
     private final UserDetailsService userDetailsService;

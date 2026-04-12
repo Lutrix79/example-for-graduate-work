@@ -17,8 +17,8 @@ public interface CommentMapper {
     @Mapping(source = "author.id", target = "author")
     @Mapping(source = "author.image", target = "authorImage")
     @Mapping(source = "author.firstName", target = "authorFirstName")
-    @Mapping(source = "id", target = "pk")  // id из сущности → pk в DTO
-    @Mapping(source = "createdAt", target = "createdAt")  // createdAt уже Long, маппинг напрямую
+    @Mapping(source = "id", target = "pk")
+    @Mapping(source = "createdAt", target = "createdAt")
     Comment toDto(CommentEntity commentEntity);
 
     List<Comment> toDtoList(List<CommentEntity> commentEntities);

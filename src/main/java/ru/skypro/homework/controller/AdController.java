@@ -1,63 +1,78 @@
 package ru.skypro.homework.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.*;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dto.Ad;
+import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.service.AdService;
 
 @Slf4j
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
-@Tag(name = "Объявления", description = "API для управления объявлениями")
 public class AdController {
 
     private final AdService adService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
-    @Operation(summary = "Получение всех объявлений")
-    public ResponseEntity<Ads> getAllAds() {
+    public ResponseEntity<ru.skypro.homework.dto.Ads> getAllAds() {
         return ResponseEntity.ok(adService.getAllAds());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Получение объявления по ID")
-    public ResponseEntity<ExtendedAd> getAd(@PathVariable Integer id) {
+    public ResponseEntity<ru.skypro.homework.dto.ExtendedAd> getAd(@PathVariable Integer id) {
         return adService.getAdById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Создание объявления")
-    public ResponseEntity<Ad> createAd(@RequestBody CreateOrUpdateAd createAd, Authentication authentication) {
-        return adService.createAd(createAd, authentication.getName())
-                .map(ResponseEntity.status(HttpStatus.CREATED)::body)
-                .orElse(ResponseEntity.badRequest().build());
+    public ResponseEntity<Ad> createAd(
+            @RequestPart("properties") String propertiesJson,
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            Authentication authentication) throws Exception {
+
+        log.info("=== CREATE AD REQUEST ===");
+        log.info("Properties JSON: {}", propertiesJson);
+        log.info("Image present: {}", image != null && !image.isEmpty());
+        log.info("User: {}", authentication.getName());
+
+        CreateOrUpdateAd createAd = objectMapper.readValue(propertiesJson, CreateOrUpdateAd.class);
+
+        log.info("Title: {}", createAd.getTitle());
+        log.info("Price: {}", createAd.getPrice());
+        log.info("Description: {}", createAd.getDescription());
+
+        Ad ad = adService.createAd(createAd, authentication.getName()).orElseThrow();
+
+        if (image != null && !image.isEmpty()) {
+            log.info("Saving image for ad: {}", ad.getPk());
+            adService.updateAdImage(ad.getPk(), image);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ad);
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and @adService.isAdOwner(#id, authentication.name)")
-    @Operation(summary = "Обновление объявления")
+    @PreAuthorize("isAuthenticated() and @adServiceImpl.isAdOwner(#id, authentication.name)")
     public ResponseEntity<Ad> updateAd(@PathVariable Integer id,
-                                       @RequestBody CreateOrUpdateAd updateAd,
-                                       Authentication authentication) {
-        return adService.updateAd(id, updateAd)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                                       @RequestBody CreateOrUpdateAd updateAd) {
+        Ad ad = adService.updateAd(id, updateAd).orElseThrow();
+        return ResponseEntity.ok(ad);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated() and @adService.isAdOwner(#id, authentication.name)")
-    @Operation(summary = "Удаление объявления")
     public ResponseEntity<Void> deleteAd(@PathVariable Integer id) {
         if (adService.deleteAd(id)) {
             return ResponseEntity.noContent().build();
@@ -67,8 +82,15 @@ public class AdController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Получение объявлений текущего пользователя")
-    public ResponseEntity<Ads> getMyAds(Authentication authentication) {
+    public ResponseEntity<ru.skypro.homework.dto.Ads> getMyAds(Authentication authentication) {
         return ResponseEntity.ok(adService.getAdsByUserEmail(authentication.getName()));
+    }
+
+    @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated() and @adService.isAdOwner(#id, authentication.name)")
+    public ResponseEntity<Void> updateAdImage(@PathVariable Integer id,
+                                              @RequestParam("image") MultipartFile image) {
+        adService.updateAdImage(id, image);
+        return ResponseEntity.ok().build();
     }
 }

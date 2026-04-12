@@ -5,7 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor  // ← Добавь эту аннотацию
+@AllArgsConstructor
 @Schema(description = "Данные для создания или обновления объявления")
 public class CreateOrUpdateAd {
 
@@ -21,34 +27,4 @@ public class CreateOrUpdateAd {
     @Schema(description = "описание объявления")
     @Size(min = 8, max = 64)
     private String description;
-
-    public CreateOrUpdateAd(String title, int price, String description) {
-        this.title = title;
-        this.price = price;
-        this.description = description;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

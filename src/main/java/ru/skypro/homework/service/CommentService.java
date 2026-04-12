@@ -1,121 +1,64 @@
 package ru.skypro.homework.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
-import ru.skypro.homework.entity.AdEntity;
-import ru.skypro.homework.entity.CommentEntity;
-import ru.skypro.homework.entity.UserEntity;
-import ru.skypro.homework.mapper.CommentMapper;
-import ru.skypro.homework.repository.AdRepository;
-import ru.skypro.homework.repository.CommentRepository;
-import ru.skypro.homework.repository.UserRepository;
 
 import java.util.Optional;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class CommentService {
+/**
+ * Сервис для управления комментариями
+ * <p>
+ * Предоставляет методы для CRUD операций с комментариями,
+ * а также проверки прав доступа к комментариям
+ * </p>
+ */
+public interface CommentService {
 
-    private final CommentRepository commentRepository;
-    private final AdRepository adRepository;
-    private final UserRepository userRepository;
-    private final CommentMapper commentMapper;
+    /**
+     * Возвращает все комментарии к указанному объявлению
+     *
+     * @param adId идентификатор объявления
+     * @return объект Comments со списком комментариев и их количеством
+     * @throws RuntimeException если объявление не найдено
+     */
+    Comments getCommentsByAdId(Integer adId);
 
-    @Transactional(readOnly = true)
-    public Comments getCommentsByAdId(Integer adId) {
-        log.debug("Getting comments for ad id: {}", adId);
+    /**
+     * Добавляет новый комментарий к объявлению
+     *
+     * @param adId       идентификатор объявления
+     * @param commentDto DTO с текстом комментария
+     * @param userEmail  email автора (из контекста безопасности)
+     * @return Optional с созданным комментарием
+     * @throws RuntimeException если объявление или пользователь не найдены
+     */
+    Optional<Comment> addComment(Integer adId, CreateOrUpdateComment commentDto, String userEmail);
 
-        if (!adRepository.existsById(adId)) {
-            log.warn("Ad not found with id: {}", adId);
-            return new Comments();
-        }
+    /**
+     * Удаляет комментарий по идентификатору
+     *
+     * @param commentId идентификатор комментария
+     * @return true если комментарий успешно удален, false если не найден
+     */
+    boolean deleteComment(Integer commentId);
 
-        var comments = commentRepository.findByAdId(adId);
-        return commentMapper.toCommentsDto(comments);
-    }
+    /**
+     * Обновляет текст комментария
+     *
+     * @param commentId  идентификатор комментария
+     * @param commentDto DTO с обновленным текстом
+     * @return Optional с обновленным комментарием
+     * @throws RuntimeException если комментарий не найден
+     */
+    Optional<Comment> updateComment(Integer commentId, CreateOrUpdateComment commentDto);
 
-    @Transactional
-    public Optional<Comment> addComment(Integer adId, CreateOrUpdateComment commentDto, String userEmail) {
-        log.info("Adding comment to ad {} by user {}", adId, userEmail);
-
-        AdEntity ad = adRepository.findById(adId)
-                .orElseThrow(() -> new RuntimeException("Ad not found with id: " + adId));
-
-        UserEntity author = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userEmail));
-
-        CommentEntity comment = commentMapper.toEntity(commentDto);
-        comment.setAuthor(author);
-        comment.setAd(ad);
-        comment.setCreatedAt(System.currentTimeMillis());
-
-        CommentEntity saved = commentRepository.save(comment);
-        log.info("Comment added successfully with id: {}", saved.getId());
-
-        return Optional.of(commentMapper.toDto(saved));
-    }
-
-    @Transactional
-    public boolean deleteComment(Integer commentId) {
-        log.info("Deleting comment with id: {}", commentId);
-
-        if (!commentRepository.existsById(commentId)) {
-            log.warn("Comment not found with id: {}", commentId);
-            return false;
-        }
-
-        commentRepository.deleteById(commentId);
-        log.info("Comment deleted successfully with id: {}", commentId);
-        return true;
-    }
-
-    @Transactional
-    public Optional<Comment> updateComment(Integer commentId, CreateOrUpdateComment commentDto) {
-        log.info("Updating comment with id: {}", commentId);
-
-        CommentEntity comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found with id: " + commentId));
-
-        comment.setText(commentDto.getText());
-
-        CommentEntity updated = commentRepository.save(comment);
-        log.info("Comment updated successfully with id: {}", commentId);
-
-        return Optional.of(commentMapper.toDto(updated));
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isCommentOwner(Integer commentId, String email) {
-        log.debug("Checking if user {} is owner of comment {}", email, commentId);
-
-        return commentRepository.findById(commentId)
-                .map(comment -> comment.getAuthor().getEmail().equals(email))
-                .orElse(false);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean canDeleteComment(Integer commentId, String email) {
-        // Админ может удалить любой комментарий
-        return commentRepository.findById(commentId)
-                .map(comment -> {
-                    if (isAdmin(email)) {
-                        return true;
-                    }
-                    return comment.getAuthor().getEmail().equals(email);
-                })
-                .orElse(false);
-    }
-
-    private boolean isAdmin(String email) {
-        return userRepository.findByEmail(email)
-                .map(user -> "ADMIN".equals(user.getRole()))
-                .orElse(false);
-    }
+    /**
+     * Проверяет, является ли пользователь владельцем комментария
+     *
+     * @param commentId идентификатор комментария
+     * @param email     email пользователя
+     * @return true если пользователь является владельцем, false в противном случае
+     */
+    boolean isCommentOwner(Integer commentId, String email);
 }
