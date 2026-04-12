@@ -38,6 +38,26 @@
    ./mvnw clean install
    ```
 
+2. **Создание базы данных PostgreSQL:**
+   - Убедитесь, что PostgreSQL установлен на вашей системе.
+   - Запустите терминал и подключитесь к PostgreSQL:
+     ```bash
+     psql -U postgres
+     ```
+   - Создайте новую базу данных:
+     ```sql
+     CREATE DATABASE example_for_graduate_work;
+     ```
+   - Создайте пользователя с правами на доступ к базе данных:
+     ```sql
+     CREATE USER adm WITH PASSWORD '123321';
+     GRANT ALL PRIVILEGES ON DATABASE example_for_graduate_work TO adm;
+     ```
+   - Выход из терминала PostgreSQL:
+     ```sql
+     \q
+     ```
+
 3. **Настройка базы данных:**
    Проект использует миграции Flyway, поэтому создайте пустую базу данных и настройте подключение в `src/main/resources/application.properties`:
    ```properties
