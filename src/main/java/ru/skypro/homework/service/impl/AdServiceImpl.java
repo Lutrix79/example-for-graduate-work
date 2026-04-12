@@ -14,6 +14,7 @@ import ru.skypro.homework.entity.AdEntity;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AdService;  // ✅ Импорт интерфейса
 import ru.skypro.homework.service.ImageService;
@@ -29,6 +30,7 @@ public class AdServiceImpl implements AdService {
     private final UserRepository userRepository;
     private final AdMapper adMapper;
     private final ImageService imageService;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -77,8 +79,8 @@ public class AdServiceImpl implements AdService {
         return Optional.of(adMapper.toDto(updated));
     }
 
-    @Transactional
     @Override
+    @Transactional
     public boolean deleteAd(Integer id) {
         log.info("Deleting ad with id: {}", id);
 
@@ -87,6 +89,8 @@ public class AdServiceImpl implements AdService {
             return false;
         }
 
+        commentRepository.deleteByAdId(id);
+
         adRepository.findById(id).ifPresent(ad -> {
             if (ad.getImage() != null && !ad.getImage().isEmpty()) {
                 imageService.deleteImage(ad.getImage());
@@ -94,6 +98,9 @@ public class AdServiceImpl implements AdService {
         });
 
         adRepository.deleteById(id);
+
+        adRepository.flush();
+
         log.info("Ad deleted successfully with id: {}", id);
         return true;
     }

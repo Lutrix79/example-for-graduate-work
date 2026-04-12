@@ -72,7 +72,7 @@ public class AdController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and @adService.isAdOwner(#id, authentication.name)")
+    @PreAuthorize("isAuthenticated() and @adServiceImpl.isAdOwner(#id, authentication.name)")
     public ResponseEntity<Void> deleteAd(@PathVariable Integer id) {
         if (adService.deleteAd(id)) {
             return ResponseEntity.noContent().build();
@@ -87,7 +87,7 @@ public class AdController {
     }
 
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated() and @adService.isAdOwner(#id, authentication.name)")
+    @PreAuthorize("isAuthenticated() and @adServiceImpl.isAdOwner(#id, authentication.name)")
     public ResponseEntity<Void> updateAdImage(@PathVariable Integer id,
                                               @RequestParam("image") MultipartFile image) {
         adService.updateAdImage(id, image);
