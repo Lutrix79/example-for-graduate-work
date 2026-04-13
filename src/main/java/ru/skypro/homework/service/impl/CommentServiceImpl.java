@@ -15,7 +15,7 @@ import ru.skypro.homework.mapper.CommentMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.service.CommentService;  // ✅ Импорт интерфейса
+import ru.skypro.homework.service.CommentService;
 
 import java.util.Optional;
 

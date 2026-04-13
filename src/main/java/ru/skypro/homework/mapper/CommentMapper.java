@@ -40,7 +40,7 @@ public interface CommentMapper {
         CommentEntity entity = toEntity(dto);
         entity.setAuthor(author);
         entity.setAd(ad);
-        entity.setCreatedAt(System.currentTimeMillis());  // устанавливаем текущее время
+        entity.setCreatedAt(System.currentTimeMillis());
         return entity;
     }
 

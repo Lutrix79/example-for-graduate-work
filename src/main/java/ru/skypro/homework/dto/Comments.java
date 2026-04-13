@@ -18,7 +18,6 @@ public class Comments {
         this.results = new ArrayList<>();
     }
 
-    // Геттеры и сеттеры
     public Integer getCount() {
         return count;
     }

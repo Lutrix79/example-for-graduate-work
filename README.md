@@ -30,39 +30,53 @@
 
 ---
 
-## 🔧 Установка и запуск
-
-### Требования
-- Java 17 или выше
-- Maven 3.8+
-- PostgreSQL 14+
+## Быстрый старт
 
 ### Шаг 1: Клонирование репозитория
+```bash
 git clone <repository-url>
 cd STOOLB
+```
 
-### 2. Создание базы данных PostgreSQL
-- CREATE DATABASE ads_db;
-- CREATE USER your_user WITH PASSWORD 'your_password';
-- GRANT ALL PRIVILEGES ON DATABASE ads_db TO your_user;
+### 2. Создание базы данных PostgreSQL и инструменты работы с ней
+#### Cсылки на скачивание инстурментов для работы с базой данных:
+- установка PostgreSQL ===> www.enterprisedb.com
+- установка DBeaver для визуального удобства пользования ===> https://dbeaver.io/download/;
+
+#### Подключитесь к PostgreSQL и выполните:
+```bash
+CREATE DATABASE 'your_database';
+CREATE USER your_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
+```
 
 ### 3. Настройка application.properties
-Создайте файл src/main/resources/application.properties:
-
-- spring.datasource.url=jdbc:postgresql://localhost:5432/ads_db
+Создайте файл src/main/resources/application.properties и вставте эти данные:
+```bash
+- spring.datasource.url=jdbc:postgresql://localhost:5432/your_database
 - spring.datasource.username=your_user
 - spring.datasource.password=your_password
 - spring.datasource.driver-class-name=org.postgresql.Driver
 - spring.jpa.hibernate.ddl-auto=update
 - spring.jpa.show-sql=false
 - server.port=8080
+```
+### 4. Создание папок для изображений
+#### В корне проекта создайте папки:
+- uploads/avatars
+- uploads/ads
 
-### 4. Сборка и запуск
+### 5. Сборка и запуск
+```bash
 - mvn clean install
 - mvn spring-boot:run
+```
 
-### 5. Проверка
-Откройте в браузере: http://localhost:8080/swagger-ui.html
+### 6. Проверка
+| **Сервис**     | **URL**    |
+|----------------|------------|
+| **Swagger UI** | **http://localhost:8080/swagger-ui.html** |
+| **OpenAPI JSON**     | **https://github.com/BizinMitya/front-react-avito/blob/v1.19/openapi.yaml**    |
 
 ## API Эндпоинты
 
@@ -110,3 +124,7 @@ STOOLB/
 │   ├── avatars/        - аватары пользователей
 │   └── ads/            - картинки объявлений
 └── pom.xml
+```
+
+## Автор
+Ершов Илья

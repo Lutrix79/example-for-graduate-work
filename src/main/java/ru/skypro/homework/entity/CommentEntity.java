@@ -1,7 +1,13 @@
 package ru.skypro.homework.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "comments")
 
@@ -25,44 +31,4 @@ public class CommentEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id", nullable = false)
     private AdEntity ad;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public UserEntity getAuthor() {
-        return author;
-    }
-
-    public AdEntity getAd() {
-        return ad;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setAuthor(UserEntity author) {
-        this.author = author;
-    }
-
-    public void setAd(AdEntity ad) {
-        this.ad = ad;
-    }
 }

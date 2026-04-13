@@ -16,7 +16,7 @@ import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.repository.UserRepository;
-import ru.skypro.homework.service.AdService;  // ✅ Импорт интерфейса
+import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.ImageService;
 
 import java.util.Optional;

@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor  // ← Добавь эту аннотацию
+@NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Данные для создания или обновления объявления")
 public class CreateOrUpdateAd {
