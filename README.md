@@ -104,9 +104,6 @@ GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
 | **PATCH  /ads/{adId}/comments/{commentId}** | **- обновить комментарий**   |
 | **DELETE /ads/{adId}/comments/{commentId}** | **- удалить комментарий**    |
 
-## Документация
-- Swagger UI: http://localhost:8080/swagger-ui.html
-- OpenAPI JSON: http://localhost:8080/v3/api-docs
 
 ## Структура проекта
 ```plaintext
