@@ -17,30 +17,48 @@
 
 ## Используемые технологии
 
-| Категория | Технологии |
-|-----------|------------|
-| **Язык** | Java 17 |
-| **Фреймворк** | Spring Boot 3.1.0 |
-| **Безопасность** | Spring Security 6.1.0 (Basic Auth) |
-| **База данных** | PostgreSQL 42.6.0, Hibernate 6.2.2 |
-| **Маппинг** | MapStruct 1.5.5, Lombok 1.18.26 |
+| Категория            | Технологии |
+|----------------------|------------|
+| **Язык**             | Java 17 |
+| **Фреймворк**        | Spring Boot 3.1.0 |
+| **Безопасность**     | Spring Security 6.1.0 (Basic Auth) |
+| **Фронтенд часть**   | React |
+| **База данных**      | PostgreSQL 42.6.0, Hibernate 6.2.2 |
+| **Маппинг**          | MapStruct 1.5.5, Lombok 1.18.26 |
 | **Документация API** | OpenAPI 3.0, Swagger UI (springdoc-openapi 2.1.0) |
-| **Сборка** | Maven |
-| **Тестирование** | Postman |
+| **Сборка**           | Maven |
+| **Тестирование**     | Postman |
 
 ---
 
 ## Быстрый старт
+### Предварительные требования
+| Требование     | Версия |
+|----------------|--------|
+| **Java**       | 17+    |
+| **Maven**      | 4.0.0  |
+| **PostgreSQL** | 14+    |
+| **Docker**     | 4.65.0 |
 
 ### Шаг 1: Клонирование репозитория
 ```bash
-git clone <repository-url>
-cd STOOLB
+git clone https://github.com/skypro-backend/example-for-graduate-work
+cd project-name
 ```
 
-### 2. Создание базы данных PostgreSQL и инструменты работы с ней
+### Шаг 2: Установка Docker для фронта
+#### Для проекта создана фронтенд-часть сайта:
+- Потребуется установка Docker Desktop на ваш компьютер ==> https://www.docker.com/products/docker-desktop/
+  
+#### Чтобы запустить фронтенд с помощью установленного Docker, нужно открыть командную строку (или терминал) и выполнить следующую команду:
+```bash
+docker run -p 3000:3000 --rm ghcr.io/dmitry-bizin/front-react-avito:v1.21
+```
+#### После выполнения команды frontend запустится на порту 3000 и можно будет зайти на него через браузер по адресу: http://localhost:3000
+
+### Шаг 3: Создание базы данных PostgreSQL и установка инструментов работы с ней
 #### Cсылки на скачивание инстурментов для работы с базой данных:
-- установка PostgreSQL ===> www.enterprisedb.com
+- установка PostgreSQL ===> https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 - установка DBeaver для визуального удобства пользования ===> https://dbeaver.io/download/;
 
 #### Подключитесь к PostgreSQL и выполните:
@@ -50,7 +68,7 @@ CREATE USER your_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
 ```
 
-### 3. Настройка application.properties
+### Шаг 4: Настройка application.properties
 Создайте файл(если его по какой-то причине нету) по пути ***src/main/resources/application.properties*** и вставте эти данные:
 ```bash
 - spring.datasource.url=jdbc:postgresql://localhost:5432/your_database
@@ -61,18 +79,18 @@ GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
 - spring.jpa.show-sql=false
 - server.port=8080
 ```
-### 4. Создание папок для изображений
+### Шаг 5: Создание папок для изображений
 #### В корне проекта создайте папки:
 - images/avatars
 - images/ads
 
-### 5. Сборка и запуск
+### Шаг 6: Сборка и запуск
 ```bash
 - mvn clean install
 - mvn spring-boot:run
 ```
 
-### 6. Проверка
+### Шаг 7: Проверка
 | **Сервис**     | **URL**    |
 |----------------|------------|
 | **Swagger UI** | **http://localhost:8080/swagger-ui.html** |
