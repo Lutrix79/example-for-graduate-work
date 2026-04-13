@@ -51,7 +51,7 @@ GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
 ```
 
 ### 3. Настройка application.properties
-Создайте файл src/main/resources/application.properties и вставте эти данные:
+Создайте файл(если его по какой-то причине нету) по пути ***src/main/resources/application.properties*** и вставте эти данные:
 ```bash
 - spring.datasource.url=jdbc:postgresql://localhost:5432/your_database
 - spring.datasource.username=your_user
@@ -63,8 +63,8 @@ GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
 ```
 ### 4. Создание папок для изображений
 #### В корне проекта создайте папки:
-- uploads/avatars
-- uploads/ads
+- images/avatars
+- images/ads
 
 ### 5. Сборка и запуск
 ```bash
@@ -81,12 +81,12 @@ GRANT ALL PRIVILEGES ON DATABASE 'your_database' TO 'your_password';
 ## API Эндпоинты
 
 ### Пользователи
-| **POST /register**    | **- регистрация**      |
-|-----------------------|------------------------|
-| **POST /login**       | **- вход**             |
-| **GET /users/me**     | **- получить профиль** |
-| **PATCH /users/me     | **- обновить профиль** |
-| PATCH /users/me/image | **- загрузить аватар** |
+|**POST /register**| **- регистрация**      |
+|----------------|------------------------|
+| **POST /login**| **- вход**             |
+| **GET /users/me**| **- получить профиль** |
+| **PATCH /users/me| **- обновить профиль** |
+| PATCH /users/me/image| **- загрузить аватар** |
 
 ### Объявления
 | **GET /ads**       | **- все объявления**      |
@@ -117,7 +117,7 @@ STOOLB/
 │   ├── mapper/         - преобразование Entity <-> DTO
 │   ├── config/         - настройки (Security, Swagger)
 │   └── exception/      - обработка ошибок
-├── uploads/
+├── images/
 │   ├── avatars/        - аватары пользователей
 │   └── ads/            - картинки объявлений
 └── pom.xml
